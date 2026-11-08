@@ -1,38 +1,99 @@
-# Agent Tool Builder Skill
+# claude-agent-tool-builder-skill
 
-A Claude skill for designing tools that AI agents can call reliably. It focuses on the interface exposed to the model, including tool schemas, descriptions, input validation, error handling, and Model Context Protocol (MCP) tool design.
+A Claude Code skill for designing reliable tools that AI agents can discover, select, call, and recover from.
 
-## What This Skill Covers
+## Overview
 
-- Designing clear, unambiguous JSON schemas for tool inputs.
-- Writing descriptions that help an LLM select and use the correct tool.
-- Providing examples that clarify expected inputs and outputs.
-- Validating arguments and handling malformed requests.
-- Returning actionable errors that help an agent recover.
-- Applying MCP concepts when exposing tools to agents.
-- Avoiding vague descriptions, silent failures, and unnecessarily large tool sets.
+Agents interact with tools through their names, descriptions, schemas, and returned results. A tool can be implemented correctly and still be difficult for an agent to use if its interface is ambiguous or its errors are unhelpful.
 
-## Repository Structure
+This skill focuses on tool contracts from schema design through validation, execution, error handling, and MCP integration.
 
-- `SKILL.md`: Skill instructions, design principles, patterns, anti-patterns, and related guidance.
-- `LICENSE`: MIT License for this repository.
+## Main Capabilities
 
-## Core Design Principle
+- Design clear tool names and descriptions.
+- Define JSON Schema input contracts.
+- Document required and optional parameters.
+- Provide examples of valid calls.
+- Validate tool arguments.
+- Return structured, actionable errors.
+- Design safe side-effect boundaries.
+- Build tools for function calling and MCP servers.
+- Reduce unnecessary tool complexity.
+- Improve agent tool-selection reliability.
 
-An agent generally interacts with a tool through its schema and description, not through the implementation details behind it. A well-implemented function can still be difficult for an agent to use if the interface is ambiguous. Clear names, precise parameter definitions, useful examples, and explicit error responses are therefore essential.
+## Core Design Principles
 
-## When to Use It
+### Make the Tool's Purpose Obvious
 
-Use this skill when creating function-calling tools, designing an MCP server, reviewing an agent's tool interface, or debugging repeated tool-selection and argument errors.
+A name and description should communicate exactly what the tool does and when it should be used.
 
-## Getting Started
+### Keep Schemas Precise
 
-1. Add the skill to a Claude-compatible skills environment.
-2. Describe the tool's purpose and the tasks an agent must complete with it.
-3. Define the input schema and document each field precisely.
-4. Include examples and validation rules.
-5. Design recoverable error responses and test the tool with realistic agent requests.
+Define types, constraints, defaults, enumerations, and required fields. Avoid ambiguous free-form parameters when a structured schema is possible.
 
-## License
+### Validate at the Boundary
 
-Released under the MIT License. See [LICENSE](LICENSE) for details.
+Do not trust model-generated arguments. Validate types, ranges, identifiers, permissions, and business rules before execution.
+
+### Return Useful Results
+
+Provide structured output that clearly distinguishes success, empty results, validation errors, and execution failures.
+
+### Make Side Effects Explicit
+
+Document whether a tool reads, writes, deletes, publishes, or triggers an external action. Require approval where appropriate.
+
+## Installation
+
+```bash
+git clone https://github.com/Brajesh31/claude-agent-tool-builder-skill.git ~/.claude/skills/agent-tool-builder
+```
+
+## Usage
+
+Invoke the skill when designing agent tools or MCP interfaces:
+
+```text
+/agent-tool-builder
+```
+
+Provide the tool's purpose, expected inputs, output format, runtime, permissions, and failure conditions.
+
+## Recommended Workflow
+
+1. Define the task the tool should perform.
+2. Identify the smallest useful interface.
+3. Choose a clear tool name.
+4. Write a concise, discriminative description.
+5. Define the input schema.
+6. Add validation and authorization checks.
+7. Design structured success and error outputs.
+8. Document side effects and idempotency.
+9. Test valid, invalid, and adversarial inputs.
+10. Evaluate whether an agent can select and use the tool correctly.
+
+## MCP Considerations
+
+When exposing tools through MCP, define stable names, input schemas, and clear result structures. Keep server capabilities focused and document any resources or prompts that complement the tools.
+
+## Tool Quality Checklist
+
+- Tool name is unambiguous.
+- Description explains when to use it.
+- Parameters have clear types and constraints.
+- Required fields are explicit.
+- Inputs are validated server-side.
+- Errors explain how to recover.
+- Side effects are documented.
+- Permissions are checked.
+- Outputs are structured and predictable.
+- Tool behavior is tested with realistic agent calls.
+
+## Repository Contents
+
+- `SKILL.md`: Main tool design and MCP guidance.
+- `README.md`: Design principles, workflow, and checklist.
+
+## Practical Principle
+
+The model does not see your implementation. It sees the interface you expose. Invest in the schema, description, and error behavior as carefully as the underlying function.
